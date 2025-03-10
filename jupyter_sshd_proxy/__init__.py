@@ -5,18 +5,16 @@ import subprocess
 
 from typing import Any, Dict
 
-ALLOWED_UID_FILE = "/etc/jsp-allowed-uids"
 HOSTKEY_PATH = os.path.expanduser('~/.ssh/jupyter_sshd_hostkey')
 AUTHORIZED_KEYS_PATH = os.environ.get('JUPYTER_SSHD_PROXY_AUTHORIZED_KEYS_PATH', '.ssh/authorized_keys .ssh/authorized_keys2')
 SSHD_LOG_LEVEL = os.environ.get('JUPYTER_SSHD_PROXY_LOG_LEVEL', 'INFO')
 
 def is_current_user_allowed():
     try:
-        with open(ALLOWED_UID_FILE, "r") as f:
-            allowed_uids = {int(line.strip()) for line in f if line.strip().isdigit()}
+        allowed_uids = map(int, os.environ.get("ALLOWED_JSP_UIDS", '').split(','))
         return os.getuid() in allowed_uids
     except Exception as e:
-        print(f"Error reading {ALLOWED_UID_FILE}: {e}")
+        print("Error parsing ALLOWED_JSP_UIDS")
         return False
 
 def setup_sshd() -> Dict[str, Any]:
