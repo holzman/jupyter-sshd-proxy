@@ -1,6 +1,5 @@
 import os
 import shutil
-import shlex
 import subprocess
 
 from typing import Any, Dict
@@ -13,13 +12,13 @@ def is_current_user_allowed():
     try:
         allowed_uids = map(int, os.environ.get("ALLOWED_JSP_UIDS", '').split(','))
         return os.getuid() in allowed_uids
-    except Exception as e:
+    except Exception:
         print("Error parsing ALLOWED_JSP_UIDS")
         return False
 
 def setup_sshd() -> Dict[str, Any]:
     if not is_current_user_allowed():
-        return False
+        return { "command" : ['echo', 'Permission denied'] }
 
     if not os.path.exists(HOSTKEY_PATH):
         # Create a per-user hostkey if it does not exist
