@@ -18,7 +18,7 @@ def is_current_user_allowed():
 
 def setup_sshd() -> Dict[str, Any]:
     if not is_current_user_allowed():
-        return { "command" : ['echo', 'Permission denied'] }
+        return { "command" : ['echo', 'Permission denied'], "launcher_entry": False }
 
     if not os.path.exists(HOSTKEY_PATH):
         # Create a per-user hostkey if it does not exist
